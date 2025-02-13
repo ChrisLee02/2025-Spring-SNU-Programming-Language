@@ -1,0 +1,4 @@
+(library
+ (name hw1)
+ (public_name hw1)
+ (modules hw1 ex1 ex2 ex3 ex4 ex5))

@@ -1,0 +1,4 @@
+(test
+ (name test_hw1)
+ (modules test_hw1)
+ (libraries hw1))
