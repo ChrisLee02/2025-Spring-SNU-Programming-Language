@@ -1,37 +1,28 @@
-type crazy3 =
-  | NIL
-  | ZERO of crazy3
-  | ONE of crazy3
-  | MONE of crazy3
-  | TWO of crazy3
-  | MTWO of crazy3
+type formula =
+  | TRUE
+  | FALSE
+  | NOT of formula
+  | ANDALSO of formula * formula
+  | ORELSE of formula * formula
+  | IMPLY of formula * formula
+  | LESS of expr * expr
 
-let rec crazy3add (c1, c2) =
-  let get_digit_and_next c =
-    match c with
-    | ZERO next -> (0, next)
-    | ONE next -> (1, next)
-    | MONE next -> (-1, next)
-    | TWO next -> (2, next)
-    | MTWO next -> (-2, next)
-    | NIL -> assert false
-  in
+and expr = NUM of int | PLUS of expr * expr | MINUS of expr * expr
 
-  match (c1, c2) with
-  | NIL, _ -> c2
-  | _, NIL -> c1
-  | _, _ -> (
-      let d1, next1 = get_digit_and_next c1 in
-      let d2, next2 = get_digit_and_next c2 in
-      let sum = d1 + d2 in
-      match sum with
-      | -4 -> MONE (crazy3add (crazy3add (next1, next2), MONE NIL))
-      | -3 -> ZERO (crazy3add (crazy3add (next1, next2), MONE NIL))
-      | -2 -> MTWO (crazy3add (next1, next2))
-      | -1 -> MONE (crazy3add (next1, next2))
-      | 0 -> ZERO (crazy3add (next1, next2))
-      | 1 -> ONE (crazy3add (next1, next2))
-      | 2 -> TWO (crazy3add (next1, next2))
-      | 3 -> ZERO (crazy3add (crazy3add (next1, next2), ONE NIL))
-      | 4 -> ONE (crazy3add (crazy3add (next1, next2), ONE NIL))
-      | _ -> assert false)
+let rec eval : formula -> bool =
+ fun f ->
+  match f with
+  | TRUE -> true
+  | FALSE -> false
+  | NOT f2 -> not (eval f2)
+  | ANDALSO (f1, f2) -> eval f1 && eval f2
+  | ORELSE (f1, f2) -> eval f1 || eval f2
+  | IMPLY (f1, f2) -> (not (eval f1)) || eval f2
+  | LESS (e1, e2) ->
+      let rec eval_expr e =
+        match e with
+        | NUM n -> n
+        | PLUS (e1, e2) -> eval_expr e1 + eval_expr e2
+        | MINUS (e1, e2) -> eval_expr e1 - eval_expr e2
+      in
+      eval_expr e1 < eval_expr e2

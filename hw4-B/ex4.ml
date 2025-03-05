@@ -8,3 +8,5 @@ type map = End of treasure
 
 exception IMPOSSIBLE 
 let getReady: map -> key list = fun map -> []
+
+

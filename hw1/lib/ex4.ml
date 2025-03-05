@@ -1,19 +1,44 @@
-type crazy3 =
-  | NIL
-  | ZERO of crazy3
-  | ONE of crazy3
-  | MONE of crazy3
-  | TWO of crazy3
-  | MTWO of crazy3
+type team =
+  | Korea
+  | France
+  | Usa
+  | Brazil
+  | Japan
+  | Nigeria
+  | Cameroon
+  | Poland
+  | Portugal
+  | Italy
+  | Germany
+  | Norway
+  | Sweden
+  | England
+  | Argentina
 
-let crazy3val (crazyNum : crazy3) =
-  let rec crazy3valRec (multiplier, crazyNum) =
-    match crazyNum with
-    | NIL -> 0
-    | ZERO next -> crazy3valRec (multiplier * 3, next)
-    | ONE next -> multiplier + crazy3valRec (multiplier * 3, next)
-    | MONE next -> (multiplier * -1) + crazy3valRec (multiplier * 3, next)
-    | TWO next -> (multiplier * 2) + crazy3valRec (multiplier * 3, next)
-    | MTWO next -> (multiplier * -2) + crazy3valRec (multiplier * 3, next)
-  in
-  crazy3valRec (1, crazyNum)
+type tourna = LEAF of team | NODE of tourna * tourna
+
+let team_to_string : team -> string =
+ fun t ->
+  match t with
+  | Korea -> "Korea"
+  | France -> "France"
+  | Usa -> "Usa"
+  | Brazil -> "Brazil"
+  | Japan -> "Japan"
+  | Nigeria -> "Nigeria"
+  | Cameroon -> "Cameroon"
+  | Poland -> "Poland"
+  | Portugal -> "Portugal"
+  | Italy -> "Italy"
+  | Germany -> "Germany"
+  | Norway -> "Norway"
+  | Sweden -> "Sweden"
+  | England -> "England"
+  | Argentina -> "Argentina"
+
+let rec parenize : tourna -> string =
+ fun tourna ->
+  match tourna with
+  | NODE (tourna1, tourna2) ->
+      Printf.sprintf "(%s %s)" (parenize tourna1) (parenize tourna2)
+  | LEAF team -> team_to_string team

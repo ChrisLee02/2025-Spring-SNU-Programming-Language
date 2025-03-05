@@ -1,1 +1,4 @@
-let rec sigma (a, b, f) = if a > b then 0 else f a + sigma (a + 1, b, f) 
+let merge : int list * int list -> int list =
+ fun (l1, l2) ->
+  let l = l1 @ l2 in
+  List.rev (List.sort Stdlib.compare l)
