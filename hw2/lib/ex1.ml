@@ -5,9 +5,8 @@ type ae =
   | TIMES of ae list
   | SUM of ae list
 
-(* type 'a list = [] | ( :: ) of 'a * 'a list *)
-
-let rec diff (ae, str) =
+let rec diff : ae * string -> ae =
+ fun (ae, str) ->
   let rec remove_ith n lst =
     match lst with
     | [] -> []

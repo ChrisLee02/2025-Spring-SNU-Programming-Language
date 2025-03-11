@@ -1,34 +1,20 @@
-type heap = EMPTY | NODE of rank * value * heap * heap
-and rank = int
-and value = int
+type item = string
+type tree = LEAF of item | NODE of tree list
+type zipper = TOP | HAND of tree list * zipper * tree list
+type location = LOC of tree * zipper
 
-exception EmptyHeap
+exception NOMOVE of string
 
-let rank h =
-  match h with EMPTY -> -1 | NODE (r, _, _, _) -> r
+let goLeft loc =
+  match loc with
+  | LOC (_, TOP) -> raise (NOMOVE "left of top")
+  | LOC (t, HAND (l :: left, up, right)) ->
+      LOC (l, HAND (left, up, t :: right))
+  | LOC (_, HAND ([], _, _)) ->
+      raise (NOMOVE "left of first")
 
-let shake (x, lh, rh) =
-  if rank lh >= rank rh then NODE (rank rh + 1, x, lh, rh)
-  else NODE (rank lh + 1, x, rh, lh)
-
-let rec merge (heapA, heapB) =
-  if heapA = EMPTY then heapB
-  else if heapB = EMPTY then heapA
-  else
-    match (heapA, heapB) with
-    | NODE (_, xA, lhA, rhA), NODE (_, xB, lhB, rhB) ->
-        if xA < xB then shake (xA, lhA, merge (rhA, heapB))
-        else shake (xB, lhB, merge (heapA, rhB))
-    | _, _ -> assert false
-
-let insert (x, h) = merge (h, NODE (0, x, EMPTY, EMPTY))
-
-let findMin h =
-  match h with
-  | EMPTY -> raise EmptyHeap
-  | NODE (_, x, _, _) -> x
-
-let deleteMin h =
-  match h with
-  | EMPTY -> raise EmptyHeap
-  | NODE (_, _, lh, rh) -> merge (lh, rh)
+(* 
+goRight: location -> location
+goUp: location -> location
+goDown: location -> location
+를 정의하세용 *)
