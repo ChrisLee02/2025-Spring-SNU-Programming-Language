@@ -5,6 +5,8 @@ type ae =
   | TIMES of ae list
   | SUM of ae list
 
+exception InvalidArgument
+
 let rec diff : ae * string -> ae =
  fun (ae, str) ->
   let rec remove_ith n lst =
@@ -20,9 +22,13 @@ let rec diff : ae * string -> ae =
       if s = str then TIMES [ CONST n; POWER (s, n - 1) ]
       else CONST 0
   | TIMES lst ->
-      SUM
-        (List.mapi
-           (fun i x ->
-             TIMES (diff (x, str) :: remove_ith i lst))
-           lst)
-  | SUM lst -> SUM (List.map (fun x -> diff (x, str)) lst)
+      if List.is_empty lst then raise InvalidArgument
+      else
+        SUM
+          (List.mapi
+             (fun i x ->
+               TIMES (diff (x, str) :: remove_ith i lst))
+             lst)
+  | SUM lst ->
+      if List.is_empty lst then raise InvalidArgument
+      else SUM (List.map (fun x -> diff (x, str)) lst)
