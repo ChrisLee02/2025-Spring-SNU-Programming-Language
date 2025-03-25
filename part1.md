@@ -38,5 +38,29 @@
 - 새롭게 만들어서 리턴하는 방식의 비효율성, redundancy? -> Garbage collection, 불변성에 기반한 Sharing
 => 트리 형태를 이용, 한쪽 spine만 복사하고 나머지는 pointing하도록 구현함.
 - 성능보다 안전성, 안정성, Guarantee가 중요한 시대가 되었다.
+- 변수는 묶여있을 수도, 자유로울 수도 있다. (bind)
+
+5. 프로시저
+- 프로그램 코드에 이름을 붙인 것을 프로시저(procedure or label)라고 함.
+- 쟁점 1. 어디에 선언될지 -> 언어 by 언어죠,, C은 top level에서만.
+- 쟁점 2. 프로시저 내부의 자유로운 이름들을 어떻게 할지.
+- 자유 변수의 바인딩 규칙 -> Dynamic scope vs Static scope
+=> 안전성과 guarantee의 시대, Static scope가 살아남았다.
+=> 과거엔 Dynamic했음. 구현이 쉬웠거든,,
+- Procedure: Id x C로 정의되면 이건 dynamic scoping임.
+- 우린 static scope을 원하니까, procedure = Id x C x Env로 정의한다. => 이름의 실체는 실행 전에 결정되어야!
+- 제작자의 책임이자 실행자의 안전임,,
+
+6. 인터프리터
+- CPU는 본질적으로 기계어를 위한 인터프리터, 전깃줄의 배열로 짜였다.
+- K--의 인터프리터를 어셈블리로 짜고, 그 인터프리터를 CPU가 돌린다. -> 두 개의 기어가 맞물려 돌아간다.
+- 번역기가 있다면, 한 개의 기어로만 돌리니 더 빠르겠죠,,
+- 부트스트랩! 늘 궁금했던 것,,
+
+7. Call-by-value vs Call-by-reference
+- f(E)에서 E를 계산한 후 바인딩 -> 이건 call by value임.
+- 메모리 주소를 전달해주고 싶다면?
+- 
+
 
 
