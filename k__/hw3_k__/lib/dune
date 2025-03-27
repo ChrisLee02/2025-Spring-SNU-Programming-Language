@@ -1,0 +1,7 @@
+(library
+ (name k__))
+
+(ocamllex lexer)
+(menhir
+  (modules parser)
+  (flags --explain))
