@@ -1,0 +1,48 @@
+(* 우리나라에는 1원, 10원, 100원, 500원, 1000원, 5000원, 10000원, 50000원권
+이 있습니다. 주어진 액수의 거스름돈을 만들어 주는 방법의 수를 계산하는 함수
+numch를 K-로 정의하라. *)
+
+(* 예를 들어 numch(100)은 12가지이다: 1원만 100개로 거스르는 경우 부터, 10원
+1개와 1원 90개로 거스르기, · · ·, 100원 1개로 거스르기.
+힌트: 1원이하로만 거스르는 경우수는 1. 10원이하로만 거스르는 경우수는 1
+원이하로만 거스르는 경우수 + 10원을 하나이상 사용해서 10원이하로만 거르스는
+경우수. 100원이하로만 거스르는 경우수는 10원이하로만 거스르는 경우수 + 100
+원을 하나이상 사용해서 100원이하로만 거스르는 경우수, 등등이다 *)
+
+(* 10이 input인 경우로 생각해봅시다,,
+  10은 10보다 크거나 같음 *)
+
+
+let proc numch_k (n, k) =
+  if k = 1 then 1
+  else
+    let next_k := (
+      if k = 10 then 1
+      else 
+      if k = 100 then 10
+      else
+      if k = 500 then 100
+      else 
+      if k = 1000 then 500
+      else if k = 5000 then 1000
+      else if k = 10000 then 5000
+      else 10000
+    ) 
+    in
+    
+    let ans := 0 in
+    
+    while k < (n + 1) do
+    (
+      ans := ans + numch_k(n, next_k);
+      n := n - k      
+    );
+
+    ans + numch_k(n, next_k)
+
+in
+let proc numch (n) = numch_k(n, 50000)
+in
+let input := 0 in
+read input;
+write (numch(input))
