@@ -1,0 +1,123 @@
+(* 
+
+leaf: int → tree (* a leaf tree *)
+makeLtree: int * tree → tree (* a tree with only a left subtree *)
+makeRtree: int * tree → tree (* a tree with only a right subtree *)
+makeTree: int * tree * tree → tree (* a tree with both subtrees *)
+isEmpty: tree → bool (* see if empty tree *)
+rTree: tree → tree (* right subtree *)
+lTree: tree → tree (* left subtree *)
+nodeVal: tree → int (* node value *)
+dft: tree → unit (* print node values in depth-first order *)
+bft: tree → unit print node values in breath-first order 
+
+*)
+
+
+let proc leaf (i) = { value := i, left:=unit, right:=unit }
+in
+
+let proc makeLtree (i, lTree) = { value := i, left:=lTree, right:=unit }
+in
+
+let proc makeRtree (i, rTree) = { value := i, left:=unit, right:=rTree }
+in 
+
+let proc makeTree (i, lTree, rTree) = { value := i, left:=lTree, right:=rTree }
+in 
+
+let proc isEmpty (tree) = (tree = unit)
+in 
+
+let proc rTree (tree) = tree.right
+in 
+
+let proc lTree (tree) = tree.left
+in 
+
+let proc nodeVal (tree) = tree.value
+in 
+
+let proc dft (tree) = 
+  if isEmpty(tree) then unit
+  else 
+    (
+      write(nodeVal(tree));
+      dft(lTree(tree));
+      dft(rTree(tree))
+    )
+in
+
+let nil := unit 
+in
+
+let proc cons (h, t) = {head := h, tail := t}
+in
+
+let proc isEmpty_list (l) = (l = nil)
+in
+
+let proc head (l) = l.head
+in
+
+let proc tail (l) = l.tail
+in
+
+let proc reverse_list_rec (l, acc) =
+  if isEmpty_list(l)
+  then acc
+  else reverse_list_rec(tail(l), cons(head(l), acc))
+in
+
+let proc reverse_list (l) =
+  reverse_list_rec(l, nil)
+in
+
+let emptyQueue := {front := nil, rear := nil}
+in
+
+let proc isEmpty_queue (q) =   
+  if isEmpty_list(q.front) then
+    if isEmpty_list(q.rear) then true
+    else false
+  else false
+in
+
+let proc enqueue (q, x) = 
+  {front := q.front, rear := cons(x, q.rear)}
+in
+
+let proc dequeue (q) =
+  if isEmpty_list(q.front) then 
+    {front := tail(reverse_list(q.rear)), rear:= nil}
+  else
+    {front := tail(q.front), rear := q.rear}
+in
+
+let proc front (q) =
+  if isEmpty_list(q.front) then 
+    head(reverse_list(q.rear) )
+  else
+    head(q.front)
+in
+
+let proc bft (tree) = 
+  if isEmpty(tree) then unit
+  else
+    let q := enqueue(emptyQueue, tree)
+    in
+    while (not isEmpty_queue(q)) do
+    (       
+        let node := front(q)
+        in
+        (
+          q := dequeue(q);
+          if isEmpty(node) then unit
+          else
+            (write(nodeVal(node));
+            q := enqueue(q, lTree(node));
+            q := enqueue(q, rTree(node)))
+        ) 
+      )
+in 
+2025
