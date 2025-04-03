@@ -1,17 +1,21 @@
 (* 
 
-leaf: int → tree (* a leaf tree *)
-makeLtree: int * tree → tree (* a tree with only a left subtree *)
-makeRtree: int * tree → tree (* a tree with only a right subtree *)
-makeTree: int * tree * tree → tree (* a tree with both subtrees *)
-isEmpty: tree → bool (* see if empty tree *)
+leaf: int → tree (* leaf tree *)
+makeLtree: int × tree → tree (* tree with only left subtree *)
+makeRtree: int × tree → tree (* tree with only right subtree *)
+makeTree: int × tree × tree → tree (* tree with both subtrees *)
+isLeaf: tree → bool (* see if leaf tree *)
+isLtree: tree → bool (* see if tree with only left subtree *)
+isRtree: tree → bool (* see if tree with only right subtree *)
+isLRtree: tree → bool (* see if tree with both subtrees *)
 rTree: tree → tree (* right subtree *)
 lTree: tree → tree (* left subtree *)
 nodeVal: tree → int (* node value *)
 dft: tree → unit (* print node values in depth-first order *)
-bft: tree → unit print node values in breath-first order 
+bft: tree → unit (* print node values in breath-first order *)
 
 *)
+
 
 
 let proc leaf (i) = { value := i, left:=unit, right:=unit }
@@ -28,7 +32,12 @@ in
 
 let proc isEmpty (tree) = (tree = unit)
 in 
-
+(*
+  isLeaf: tree → bool (* see if leaf tree *)
+  isLtree: tree → bool (* see if tree with only left subtree *)
+  isRtree: tree → bool (* see if tree with only right subtree *)
+  isLRtree: tree → bool (* see if tree with both subtrees *)
+*)
 let proc rTree (tree) = tree.right
 in 
 

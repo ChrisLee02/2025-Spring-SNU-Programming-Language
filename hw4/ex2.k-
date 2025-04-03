@@ -16,8 +16,6 @@ bft: tree → unit (* print node values in breath-first order *)
 
 *)
 
-
-
 let proc leaf (i) = { value := i, left:=unit, right:=unit }
 in
 
@@ -171,5 +169,5 @@ let proc bft (tree) =
             q := enqueue(q, rTree(node)))
         ) 
       )
-in 
-2024
+in
+2025
