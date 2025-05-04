@@ -161,62 +161,83 @@ let reachable_locs : loc list ref = ref []
  * Implement the GC algorithm introduced in class material.
  *)
 let malloc_with_gc s m e c k =
-  let rec gc_from_value : value -> loc list =
+  let add_reachable =
+   fun l ->
+    if not (List.mem l !reachable_locs) then
+      reachable_locs := l :: !reachable_locs
+  in
+  let rec gc_from_value =
    fun v ->
     match v with
-    | Z _ -> []
-    | B _ -> []
+    | Z _ | B _ | Unit -> ()
+    | L l ->
+        if not (List.mem l !reachable_locs) then (
+          add_reachable l;
+          gc_from_value (load l m))
     | R r ->
-        List.fold_left
-          (fun acc (_, l) -> (l :: acc) @ gc_from_value (load l m))
-          [] r
-    | Unit -> []
-    | L l -> gc_from_value (load l m) @ [ l ]
+        List.iter
+          (fun (_, l) ->
+            if not (List.mem l !reachable_locs) then (
+              add_reachable l;
+              gc_from_value (load l m)))
+          r
   in
-  let rec gc_from_environment : environment -> loc list =
+  let rec gc_from_environment =
    fun e ->
-    List.fold_left
-      (fun acc (_, ev) ->
+    List.iter
+      (fun (_, ev) ->
         match ev with
-        | Loc l -> (l :: acc) @ gc_from_value (load l m)
-        | Proc (x, c', e') -> acc @ gc_from_environment e')
-      [] e
+        | Loc l ->
+            if not (List.mem l !reachable_locs) then (
+              add_reachable l;
+              gc_from_value (load l m))
+        | Proc (_, _, e') -> gc_from_environment e')
+      e
   in
-  let gc_from_stack : stack -> loc list =
+  let gc_from_stack =
    fun s ->
-    List.fold_left
-      (fun acc sval ->
-        match sval with
-        | V v -> acc @ gc_from_value v
-        | P (x, c', e') -> acc @ gc_from_environment e'
-        | M (x, ev) -> (
+    List.iter
+      (fun sv ->
+        match sv with
+        | V v -> gc_from_value v
+        | P (_, _, e') -> gc_from_environment e'
+        | M (_, ev) -> (
             match ev with
-            | Loc l -> (l :: acc) @ gc_from_value (load l m)
-            | Proc (x, c', e') -> acc @ gc_from_environment e'))
-      [] s
+            | Loc l ->
+                if not (List.mem l !reachable_locs) then (
+                  add_reachable l;
+                  gc_from_value (load l m))
+            | Proc (_, _, e') -> gc_from_environment e'))
+      s
   in
-  let gc_from_continuation : continuation -> loc list =
-   fun c ->
-    List.fold_left (fun acc (_, env) -> gc_from_environment env @ acc) [] c
+  let gc_from_continuation =
+   fun c -> List.iter (fun (_, env) -> gc_from_environment env) k
   in
 
-  let garbage_collect : stack * environment * continuation -> loc list =
-   fun (s, e, k) ->
-    let locs_from_stack = gc_from_stack s in
-    let locs_from_env = gc_from_environment e in
-    let locs_from_cont = gc_from_continuation k in
-    locs_from_stack @ locs_from_env @ locs_from_cont
+  let gc_from_base () =
+    let reachable_bases =
+      List.map fst !reachable_locs |> List.sort_uniq compare
+    in
+    List.iter
+      (fun (l, _) ->
+        if List.mem (fst l) reachable_bases && not (List.mem l !reachable_locs)
+        then reachable_locs := l :: !reachable_locs)
+      m
   in
 
   if List.length m < mem_limit then
     let _ = loc_id := !loc_id + 1 in
     ((!loc_id, 0), m)
   else
-    let _ = reachable_locs := garbage_collect (s, e, k) in
+    let _ = reachable_locs := [] in
+    let _ = gc_from_stack s in
+    let _ = gc_from_environment e in
+    let _ = gc_from_continuation c in
+    let _ = gc_from_base () in
+
     (* TODO : Add the code that marks the reachable locations.
      * let _ = ... 
      *)
-
     let new_m = List.filter (fun (l, _) -> List.mem l !reachable_locs) m in
     if List.length new_m < mem_limit then
       let _ = loc_id := !loc_id + 1 in
