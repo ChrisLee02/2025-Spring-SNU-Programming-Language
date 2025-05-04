@@ -1,0 +1,4 @@
+(executables
+ (public_names sm5 gc_test)
+ (names main gc_test)
+ (libraries sm5))

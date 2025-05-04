@@ -1,0 +1,16 @@
+(* Public test case 7 : For loop *)
+
+let s := 0 in
+let i := 0 in
+(
+(if unit = for i := 1 to 3 do (write 77) 
+then write 1
+else write 0
+);
+
+for i := 1 to 10 do (
+  s := s + i
+);
+write s
+)
+(* Output : reads in n and output the summation from 1 to n *)

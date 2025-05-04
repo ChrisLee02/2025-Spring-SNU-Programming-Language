@@ -1,0 +1,87 @@
+(* 컴퓨터공학부 2021-15531 김인호 / HW4, Exercise 2: "K- 프로그래밍: 구조물 데이터" *)
+
+let proc leaf (n) = {na := n, left := {}, right := {}} in
+let proc makeLtree (n,lt) = {na := n, left := lt, right := {}} in
+let proc makeRtree (n,rt) = {na := n, left := {}, right := rt} in
+let proc makeTree (n,lt,rt) = {na := n, left := lt, right := rt} in
+let proc isLeaf (t) =
+  if (t.left = unit) then (
+    if (t.right = unit) then
+      true
+    else
+      false
+  )
+  else
+    false
+in
+let proc isLtree (t) =
+  if (t.left = unit) then
+    false
+  else
+    true
+in
+let proc isRtree (t) =
+  if (t.right = unit) then
+    false
+  else
+    true
+in
+let proc isLRtree (t) =
+  if (isLtree (t)) then (
+    if (isRtree (t)) then
+      true
+    else
+      false
+  )
+  else
+    false
+in
+let proc rTree (t) = t.right in
+let proc lTree (t) = t.left in
+let proc nodeVal (t) = t.na in
+let proc dft (t) = (
+  if (not (t.na = 1)) then (write (if (t.left = unit) then 0 else write (t.left))) else ();
+  write (nodeVal (t));
+  if (isLtree (t)) then
+    dft (lTree (t))
+  else
+    unit;
+  if (isRtree (t)) then
+    dft (rTree (t))
+  else
+    unit
+) in
+let proc bft (t) = (
+  let seq := {hd := t, tl := {}} in
+  let proc append (seq,x) =
+    if (seq = unit) then
+      {hd := x, tl := {}}
+    else
+      {hd := seq.hd, tl := (append (seq.tl,x))}
+  in
+  while (not (seq = unit)) do (
+    let curr := seq.hd in (
+      write (nodeVal (curr));
+      seq := seq.tl;
+      if (isLtree (curr)) then
+        seq := append (seq,(lTree (curr)))
+      else
+        unit;
+      if (isRtree (curr)) then
+        seq := append (seq,(rTree (curr)))
+      else
+        unit
+    )
+  )
+) in
+(
+let tree := makeTree (1, leaf(2), leaf(3)) in (* {na := 1, left := leaf(2), right := leaf(3)} *)
+write (if isLtree (tree) then 200 else 400);
+write (if isRtree (tree) then 200 else 400);
+write (tree.left.left);
+write ({a := 1, b := {a := 1, b := 2}}.b.b);
+write (if tree.left = {na := 2, left := {}, right := {}} then 200 else 400);
+write (if isRtree (tree.left) then 200 else 400);
+write (1000 + nodeVal(lTree(tree)));
+write (1000 + tree.right.na)
+)

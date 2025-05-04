@@ -1,0 +1,6 @@
+(library
+ (name lambda))
+(ocamllex lexer)
+(menhir
+  (modules parser)
+  (flags --explain))

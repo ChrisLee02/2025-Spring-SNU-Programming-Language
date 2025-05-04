@@ -1,0 +1,6 @@
+(library
+ (name sm5))
+(ocamllex lexer)
+(menhir
+  (modules parser)
+  (flags --explain))

@@ -16,8 +16,6 @@ bft: tree → unit (* print node values in breath-first order *)
 
 *)
 
-
-
 let proc leaf (i) = { value := i, left:=unit, right:=unit }
 in
 
@@ -30,19 +28,62 @@ in
 let proc makeTree (i, lTree, rTree) = { value := i, left:=lTree, right:=rTree }
 in 
 
-let proc isEmpty (tree) = (tree = unit)
-in 
-(*
-  isLeaf: tree → bool (* see if leaf tree *)
-  isLtree: tree → bool (* see if tree with only left subtree *)
-  isRtree: tree → bool (* see if tree with only right subtree *)
-  isLRtree: tree → bool (* see if tree with both subtrees *)
-*)
 let proc rTree (tree) = tree.right
 in 
 
 let proc lTree (tree) = tree.left
 in 
+
+let proc isEmpty (tree) = (tree = unit)
+in
+
+let proc isLeaf (tree) = 
+  (* see if leaf tree *)
+  if isEmpty(tree) then false
+  else 
+    (
+      if (tree.left = unit) then 
+        if (tree.right = unit) then true
+        else false
+      else false
+    )
+in
+
+let proc isLtree (tree) = 
+  (* see if tree with only left subtree *)
+  if isEmpty(tree) then false
+  else 
+    (
+      if (not (tree.left = unit)) then 
+        if (tree.right = unit) then true
+        else false
+      else false
+    )
+in
+
+let proc isRtree (tree) = 
+  (* see if tree with only right subtree *)
+  if isEmpty(tree) then false
+  else 
+    (
+      if tree.left = unit then 
+        if (not (tree.right = unit)) then true
+        else false
+      else false
+    )
+in
+
+let proc isLRtree (tree) = 
+  (* see if tree with both subtrees *)
+    if isEmpty(tree) then false
+  else 
+    (
+      if (not (tree.left = unit)) then 
+        if (not (tree.right = unit)) then true
+        else false
+      else false
+    )
+in
 
 let proc nodeVal (tree) = tree.value
 in 
@@ -128,5 +169,5 @@ let proc bft (tree) =
             q := enqueue(q, rTree(node)))
         ) 
       )
-in 
+in
 2025

@@ -1,0 +1,91 @@
+let proc leaf(i) =
+  let tree := {left := {}, node := i, right := {}} in
+  tree
+in
+
+let proc makeLtree(i, t) =
+  tree := {left := t, node := i, right := {}}
+in
+
+let proc makeRtree(i, t) =
+  tree := {left := {}, node := i, right := t}
+in
+
+let proc makeTree(i, t1, t2) =
+  tree := {left := t1, node := i, right := t2}
+in
+
+let proc isLeaf(t) =
+  if t.left = {} then (
+      if t.right = {} then true
+      else false
+  ) else false
+in
+
+let proc isLtree(t) =
+  if t.left = {} then false
+  else (
+      if t.right = {} then true
+      else false
+  )
+in
+
+let proc isRtree(t) =
+  if t.right = {} then false
+  else (
+      if t.left = {} then true
+      else false
+  )
+in
+
+let proc isLRtree(t) =
+  if t.left = {} then false
+  else (
+      if t.right = {} then true
+      else false
+  )
+in
+
+let proc rTree(t) = 
+  t.right
+in
+
+let proc lTree(t) =
+  t.left
+in
+
+let proc nodeVal(t) =
+  t.node
+in
+
+let proc dft(t) = 
+  if isLeaf(t) then write(nodeVal(t))
+  else (
+      if isLtree(t) then (
+          write(nodeVal(t));
+          dft(lTree(t))
+      )
+      else (
+          if isLRtree(t) then (
+              write(nodeVal(t));
+              dft(lTree(t));
+              dft(rTree(t))
+          )
+          else (
+              write(nodeVal(t));
+              dft(rTree(t))
+          )
+      )
+  )
+in
+
+let proc bft(t) =
+  write(nodeVal(t))
+in
+(
+let tree := leaf (123) in
+( 
+  write(1);
+  bft(tree)
+)
+)
