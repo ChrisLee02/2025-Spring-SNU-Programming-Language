@@ -4,7 +4,9 @@ synopsis: "Lambda Ground"
 description: "Lambda calculus normal-order reduction"
 maintainer: ["오규혁 <ghoh@ropas.snu.ac.kr>"]
 authors: [
-  "오규혁 <ghoh@ropas.snu.ac.kr>" "이재호 <jhlee@ropas.snu.ac.kr>" "박규연 <kypark@ropas.snu.ac.kr>"
+  "오규혁 <ghoh@ropas.snu.ac.kr>"
+  "이재호 <jhlee@ropas.snu.ac.kr>"
+  "박규연 <kypark@ropas.snu.ac.kr>"
 ]
 depends: [
   "ocaml"

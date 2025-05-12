@@ -43,4 +43,26 @@ let rec subs ((var, var_exp) : string * Lexp.t) : Lexp.t -> Lexp.t = function
 let subst ((sub, exp) : substitution * Lexp.t) : Lexp.t =
   List.fold_left (fun acc sub_ele -> subs sub_ele acc) exp sub
 
-let reduce (exp : Lexp.t) : Lexp.t = raise (Error "not implemented")
+let rec reduce_once (e : Lexp.t) : Lexp.t * bool =
+  match e with
+  (* order 1. apply from outer *)
+  | App (Lam (x, body), arg) -> (subs (x, arg) body, true)
+  (* order 2. left -> right *)
+  | App (f, arg) ->
+      let f', changed = reduce_once f in
+      if changed then (App (f', arg), true)
+      else
+        let arg', changed' = reduce_once arg in
+        if changed' then (App (f, arg'), true) else (e, false)
+  (* order 3. reduce body *)
+  | Lam (x, body) ->
+      let body', changed = reduce_once body in
+      if changed then (Lam (x, body'), true) else (e, false)
+  | Var _ -> (e, false)
+
+let reduce (e : Lexp.t) : Lexp.t =
+  let rec loop e =
+    let e', changed = reduce_once e in
+    if changed then loop e' else e'
+  in
+  loop e

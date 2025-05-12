@@ -91,9 +91,6 @@ let rec trans : K.program -> Machine.command =
          in
          loop n1
      *)
-      (* 기존 변수가 있다고 생각하고 짜야 함. 다시 말해 call by ref임.
-         근데? 루프 후에는 x값이 원래 값의 +1로 원상복귀해야됨.
-     *)
       let bind_id =
        fun (id, e) ->
         trans e

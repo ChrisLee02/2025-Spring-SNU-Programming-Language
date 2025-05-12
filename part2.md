@@ -59,3 +59,11 @@ e → e'
 -----------
 C[e] → C[e']
 - Progress lemma의 증명
+
+5. let-polymorphic type system
+- 타입을 하나의 값만 갖는게 아닌 다형성을 부여,, 이러면 좀 더 유연하게 OK사인을 주는게 가능해짐.
+- let을 이용해서 타입을 명시해준다. 이게 imperative에서와 달리 람다에서는 syntatic sugar임..
+- let x = e1 in e2 형태에서, e1에다가 최대한 for all를 붙여준 뒤 e2에서 x에 대한 타입추론의 힌트로 사용한다..
+- for all alpha, alpha -> alpha 인 함수의 집합? -> Intersect (tau -> tau) where tau = simple type.
+- polymorphism의 rank? rank가 올라가면 완전한 구현은 불가
+-> rank 0 = simple type, rank 1 = for all가 가장 바깥에만..
