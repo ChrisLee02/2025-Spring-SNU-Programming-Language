@@ -41,8 +41,8 @@ let rec cps' exp =
   | Var x -> Fn (k, App (Var k, Var x)) (* simply k(x) *)
   | Fn (x, e) ->
       (* 
-      make function body as cps one
-    *)
+        make function body as cps one
+      *)
       Fn (k, App (Var k, Fn (x, cps' e)))
   | Fnr (f, x, e) -> Fn (k, App (Var k, Fnr (f, x, cps' e)))
   (* Non constant expressions *)
@@ -63,15 +63,6 @@ let rec cps' exp =
               Fn (f1, App (cps' e2, Fn (v2, App (App (Var f1, Var v2), Var k))))
             ) )
   | Ifp (e1, e2, e3) ->
-      (* 
-      let v1 = eval e1 in
-      if v1 then 
-        let v2 = eval e2 in
-        k(v2)
-      else
-        let v3 = eval e3 in
-        k(v3)
-    *)
       let v1 = new_name () in
       let v2 = new_name () in
       let v3 = new_name () in
