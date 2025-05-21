@@ -1,0 +1,37 @@
+(lang dune 3.15)
+
+(using menhir 3.0)
+
+(name m_interp)
+
+(generate_opam_files true)
+
+(authors
+  "오규혁 <ghoh@ropas.snu.ac.kr>"
+  "이재호 <jhlee@ropas.snu.ac.kr>"
+  "배요한 <yhbae@ropas.snu.ac.kr>"
+  "이동권 <dklee@ropas.snu.ac.kr>"
+  "최재승 <jschoi@ropas.snu.ac.kr>"
+  "이승중 <sjlee@ropas.snu.ac.kr>"
+  "김진영 <jykim@ropas.snu.ac.kr>"
+  "윤용호 <yhyoon@ropas.snu.ac.kr>"
+  "장수원 <swjang@ropas.snu.ac.kr>"
+  "조성근 <skcho@ropas.snu.ac.kr>"
+  "김희정 <hjkim@ropas.snu.ac.kr>"
+  "허기홍 <khheo@ropas.snu.ac.kr>"
+  "최원태 <wtchoi@ropas.snu.ac.kr>"
+  "이희종 <ihji@ropas.snu.ac.kr>"
+  "박대준 <pudrife@ropas.snu.ac.kr>"
+  "오학주 <pronto@ropas.snu.ac.kr>"
+  "김덕환 <dk@ropas.snu.ac.kr>"
+  "신재호 <netj@ropas.snu.ac.kr>")
+
+(maintainers "오규혁 <ghoh@ropas.snu.ac.kr>")
+
+(package
+ (name m_interp)
+ (synopsis "M")
+ (description "M")
+ (depends ocaml dune))
+
+; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project

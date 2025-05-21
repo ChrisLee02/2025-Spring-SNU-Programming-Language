@@ -1,0 +1,6 @@
+(library
+ (name m_interp))
+(ocamllex lexer)
+(menhir
+  (modules parser)
+  (flags))

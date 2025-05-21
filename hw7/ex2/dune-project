@@ -1,0 +1,26 @@
+(lang dune 3.15)
+
+(using menhir 3.0)
+
+(name exn)
+
+(generate_opam_files true)
+
+(authors
+  "오규혁 <ghoh@ropas.snu.ac.kr>"
+  "이재호 <jhlee@ropas.snu.ac.kr>"
+  "조승한 <shjo@ropas.snu.ac.kr>"
+  "박규연 <kypark@ropas.snu.ac.kr>"
+  "배요한 <yhbae@ropas.snu.ac.kr>"
+  "이동권 <dklee@ropas.snu.ac.kr>"
+  "최재승 <jschoi@ropas.snu.ac.kr>")
+
+(maintainers "오규혁 <ghoh@ropas.snu.ac.kr>")
+
+(package
+ (name exn)
+ (synopsis "Exn")
+ (description "Exn")
+ (depends ocaml dune))
+
+; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project

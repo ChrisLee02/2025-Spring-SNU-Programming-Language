@@ -1,0 +1,6 @@
+(library
+ (name lowfat))
+(ocamllex lexer)
+(menhir
+  (modules parser)
+  (flags))

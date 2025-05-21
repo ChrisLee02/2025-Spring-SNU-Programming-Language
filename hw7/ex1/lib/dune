@@ -1,0 +1,6 @@
+(library
+ (name cps_translate))
+(ocamllex lexer)
+(menhir
+  (modules parser)
+  (flags))
