@@ -137,9 +137,14 @@ end = struct
     | SUB -> fun (v1, v2) -> Int (getInt v1 - getInt v2)
     | AND -> fun (v1, v2) -> Bool (getBool v1 && getBool v2)
     | OR -> fun (v1, v2) -> Bool (getBool v1 || getBool v2)
-    | EQ ->
-        (* TODO : implement this *)
-        failwith "Unimplemented"
+    | EQ -> (
+        fun (v1, v2) ->
+          match (v1, v2) with
+          | Int n1, Int n2 -> Bool (n1 = n2)
+          | Bool b1, Bool b2 -> Bool (b1 = b2)
+          | String s1, String s2 -> Bool (s1 = s2)
+          | Loc l1, Loc l2 -> Bool (l1 = l2)
+          | _ -> raise (TypeError "type mismatch in ="))
 
   let rec printValue = function
     | Int n -> print_endline (string_of_int n)
@@ -160,9 +165,7 @@ end = struct
         let c, env' = getClosure v1 in
         match c with
         | Fun (x, e) -> eval (env' @+ (x, v2)) m'' e
-        | RecFun (f, x, e) ->
-            (* TODO : implement this *)
-            failwith "Unimplemented")
+        | RecFun (f, x, e) -> eval ((env' @+ (x, v2)) @+ (f, v1)) m'' e)
     | IF (e1, e2, e3) ->
         let v1, m' = eval env mem e1 in
         eval env m' (if getBool v1 then e2 else e3)
@@ -187,8 +190,32 @@ end = struct
     | SND e ->
         let v, m' = eval env mem e in
         (snd (getPair v), m')
-    (* TODO : complete the rest of interpreter *)
-    | _ -> failwith "Unimplemented"
+    | LET (VAL (id, e1), e2) ->
+        let v1, m' = eval env mem e1 in
+        eval (env @+ (id, v1)) m' e2
+    | LET (REC (fun_id, arg_id, body), e) ->
+        let rec_fun = RecFun (fun_id, arg_id, body) in
+        let env' = env @+ (fun_id, Closure (rec_fun, env)) in
+        eval env' mem e
+    | MALLOC e ->
+        let v, m' = eval env mem e in
+        let l, m'' = malloc m' in
+        let m''' = store m'' (l, v) in
+        (Loc l, m''')
+    | ASSIGN (e1, e2) ->
+        let v1, m' = eval env mem e1 in
+        let v2, m'' = eval env m' e2 in
+        let l = getLoc v1 in
+        let m''' = store m'' (l, v2) in
+        (v2, m''')
+    | BANG e ->
+        let v, m' = eval env mem e in
+        let l = getLoc v in
+        let bang_val = load m' l in
+        (bang_val, m')
+    | SEQ (e1, e2) ->
+        let _, m' = eval env mem e1 in
+        eval env m' e2
 
   let emptyEnv x = raise (RunError ("unbound id: " ^ x))
 
