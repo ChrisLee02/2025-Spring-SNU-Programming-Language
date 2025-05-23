@@ -67,3 +67,10 @@ C[e] → C[e']
 - for all alpha, alpha -> alpha 인 함수의 집합? -> Intersect (tau -> tau) where tau = simple type.
 - polymorphism의 rank? rank가 올라가면 완전한 구현은 불가
 -> rank 0 = simple type, rank 1 = for all가 가장 바깥에만..
+- 몰라,, 나중에 땜빵해
+
+6. 오류의 세계
+- 생김새 오류(syntax) -> completed by 1970s 
+- 타입 오류 -> completed by 1990s
+- 더 functional한 타입 오류(범위 체크라든가,,)
+- 더더 functional한 타입 오류(메모리,,)
