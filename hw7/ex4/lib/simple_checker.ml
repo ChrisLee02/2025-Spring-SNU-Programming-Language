@@ -41,6 +41,20 @@ let rec lookup (env : type_env) (x : string) : typ =
   | [] -> raise (M.TypeError ("unbound variable: " ^ x))
   | (y, t) :: rest -> if x = y then t else lookup rest x
 
+let rec string_typ =
+ fun t ->
+  match t with
+  | TInt -> "int"
+  | TBool -> "bool"
+  | TString -> "string"
+  | TPair (t1, t2) -> "(" ^ string_typ t1 ^ ", " ^ string_typ t2 ^ ")"
+  | TLoc t1 -> "loc(" ^ string_typ t1 ^ ")"
+  | TFun (t1, t2) -> "(" ^ string_typ t1 ^ " -> " ^ string_typ t2 ^ ")"
+  | TVar v -> v
+  | TUnion ts ->
+      let ts_str = List.map string_typ ts in
+      String.concat " + " ts_str
+
 let rec collect_equations : M.exp * type_env -> typ * equation list =
  fun (e, env) ->
   match e with
@@ -148,7 +162,10 @@ let rec apply_subst (s : subst) (t : typ) : typ =
   | TPair (t1, t2) -> TPair (apply_subst s t1, apply_subst s t2)
   | TLoc t1 -> TLoc (apply_subst s t1)
   | TFun (t1, t2) -> TFun (apply_subst s t1, apply_subst s t2)
-  | TVar v -> ( match List.assoc_opt v s with Some t' -> t' | None -> TVar v)
+  | TVar v -> (
+      match List.assoc_opt v s with
+      | Some t' -> apply_subst s t'
+      | None -> TVar v)
   | TUnion ts -> TUnion (List.map (apply_subst s) ts)
 
 let rec occurs v t =
@@ -159,26 +176,33 @@ let rec occurs v t =
   | TUnion ts -> List.exists (occurs v) ts
   | _ -> false
 
-let rec typ_to_mtype t =
-  match t with
-  | TInt -> M.TyInt
-  | TBool -> M.TyBool
-  | TString -> M.TyString
-  | TPair (t1, t2) -> M.TyPair (typ_to_mtype t1, typ_to_mtype t2)
-  | TLoc t1 -> M.TyLoc (typ_to_mtype t1)
-  | TFun (t1, t2) -> TyArrow (typ_to_mtype t1, typ_to_mtype t2)
-  | TVar v -> raise (M.TypeError ("Unresolved type variable: " ^ v))
-  | TUnion _ ->
-      raise (M.TypeError "Union type must be resolved before conversion")
-
 let rec unify (eqs : equation list) (subst : subst) : subst =
   match eqs with
   | [] -> subst
   | Equal (t1, t2) :: rest -> (
       let t1 = apply_subst subst t1 in
       let t2 = apply_subst subst t2 in
+      (* TUnion vs TVar: must try one candidate *)
+
       match (t1, t2) with
+      | TUnion ts, TVar v | TVar v, TUnion ts -> (
+          let ts' = List.map (apply_subst subst) ts in
+          let try_unify candidate =
+            let s = (v, candidate) in
+            let rest' =
+              List.map
+                (fun (Equal (a, b)) ->
+                  Equal (apply_subst [ s ] a, apply_subst [ s ] b))
+                rest
+            in
+            try Some (unify rest' (s :: subst)) with _ -> None
+          in
+          match List.find_map try_unify ts' with
+          | Some res -> res
+          | None -> raise (M.TypeError ("cannot resolve union for " ^ v)))
+      (* Shortcut: equal types → continue *)
       | _ when t1 = t2 -> unify rest subst
+      (* General case: bind TVar to non-union *)
       | TVar v, t | t, TVar v ->
           if occurs v t then raise (M.TypeError ("occurs check failed: " ^ v))
           else
@@ -190,18 +214,35 @@ let rec unify (eqs : equation list) (subst : subst) : subst =
                 rest
             in
             unify rest' (s :: subst)
+      (* Matching constructors *)
       | TFun (a1, a2), TFun (b1, b2) | TPair (a1, a2), TPair (b1, b2) ->
           unify (Equal (a1, b1) :: Equal (a2, b2) :: rest) subst
       | TLoc a, TLoc b -> unify (Equal (a, b) :: rest) subst
+      (* Other union cases: try match against candidate *)
       | TUnion ts, t | t, TUnion ts -> (
-          let try_unify_with t_candidate =
-            try Some (unify (Equal (t_candidate, t) :: rest) subst)
+          let try_candidate candidate =
+            try Some (unify (Equal (candidate, t) :: rest) subst)
             with _ -> None
           in
-          match List.find_map try_unify_with ts with
+          match List.find_map try_candidate ts with
           | Some result -> result
-          | None -> raise (M.TypeError "no match in TUnion"))
+          | None -> raise (M.TypeError "no match in union candidates"))
+      (* Mismatched base constructors *)
       | _ -> raise (M.TypeError "cannot unify incompatible types"))
+
+let rec typ_to_mtype t =
+  match t with
+  | TInt -> M.TyInt
+  | TBool -> M.TyBool
+  | TString -> M.TyString
+  | TPair (t1, t2) -> M.TyPair (typ_to_mtype t1, typ_to_mtype t2)
+  | TLoc t1 -> M.TyLoc (typ_to_mtype t1)
+  | TFun (t1, t2) -> TyArrow (typ_to_mtype t1, typ_to_mtype t2)
+  | TVar v -> raise (M.TypeError ("Unresolved type variable: " ^ v))
+  | TUnion _ ->
+      raise
+        (M.TypeError
+           ("Union type must be resolved before conversion type:" ^ string_typ t))
 
 let check : M.exp -> M.types =
  fun exp ->
