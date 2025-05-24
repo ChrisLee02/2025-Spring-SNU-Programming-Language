@@ -95,9 +95,9 @@ let rec collect_equations : M.exp * type_env -> typ * equation list =
       let then_type, then_conds = collect_equations (then_e, env) in
       let else_type, else_conds = collect_equations (else_e, env) in
       let if_bool_cond = Equal (cond_type, TBool) in
-      let then_equivalent_cond = Equal (then_type, else_type) in
+      let then_else_equivalent_cond = Equal (then_type, else_type) in
       ( then_type,
-        (then_equivalent_cond :: if_bool_cond :: then_conds)
+        (then_else_equivalent_cond :: if_bool_cond :: then_conds)
         @ else_conds @ cond_conds )
   | BOP (op, left, right) -> (
       let left_type, left_conds = collect_equations (left, env) in
@@ -164,7 +164,7 @@ let rec apply_subst (s : subst) (t : typ) : typ =
   | TFun (t1, t2) -> TFun (apply_subst s t1, apply_subst s t2)
   | TVar v -> (
       match List.assoc_opt v s with
-      | Some t' -> apply_subst s t'
+      | Some t' -> apply_subst s t' (* there can be another Var inside of t' *)
       | None -> TVar v)
   | TUnion ts -> TUnion (List.map (apply_subst s) ts)
 
@@ -182,43 +182,9 @@ let rec unify (eqs : equation list) (subst : subst) : subst =
   | Equal (t1, t2) :: rest -> (
       let t1 = apply_subst subst t1 in
       let t2 = apply_subst subst t2 in
-      (* TUnion vs TVar: must try one candidate *)
 
       match (t1, t2) with
-      | TUnion ts, TVar v | TVar v, TUnion ts -> (
-          let ts' = List.map (apply_subst subst) ts in
-          let try_unify candidate =
-            let s = (v, candidate) in
-            let rest' =
-              List.map
-                (fun (Equal (a, b)) ->
-                  Equal (apply_subst [ s ] a, apply_subst [ s ] b))
-                rest
-            in
-            try Some (unify rest' (s :: subst)) with _ -> None
-          in
-          match List.find_map try_unify ts' with
-          | Some res -> res
-          | None -> raise (M.TypeError ("cannot resolve union for " ^ v)))
-      (* Shortcut: equal types → continue *)
       | _ when t1 = t2 -> unify rest subst
-      (* General case: bind TVar to non-union *)
-      | TVar v, t | t, TVar v ->
-          if occurs v t then raise (M.TypeError ("occurs check failed: " ^ v))
-          else
-            let s = (v, t) in
-            let rest' =
-              List.map
-                (fun (Equal (a, b)) ->
-                  Equal (apply_subst [ s ] a, apply_subst [ s ] b))
-                rest
-            in
-            unify rest' (s :: subst)
-      (* Matching constructors *)
-      | TFun (a1, a2), TFun (b1, b2) | TPair (a1, a2), TPair (b1, b2) ->
-          unify (Equal (a1, b1) :: Equal (a2, b2) :: rest) subst
-      | TLoc a, TLoc b -> unify (Equal (a, b) :: rest) subst
-      (* Other union cases: try match against candidate *)
       | TUnion ts, t | t, TUnion ts -> (
           let try_candidate candidate =
             try Some (unify (Equal (candidate, t) :: rest) subst)
@@ -227,7 +193,12 @@ let rec unify (eqs : equation list) (subst : subst) : subst =
           match List.find_map try_candidate ts with
           | Some result -> result
           | None -> raise (M.TypeError "no match in union candidates"))
-      (* Mismatched base constructors *)
+      | TVar v, t | t, TVar v ->
+          if occurs v t then raise (M.TypeError ("occurs check failed: " ^ v))
+          else unify rest ((v, t) :: subst)
+      | TFun (a1, a2), TFun (b1, b2) | TPair (a1, a2), TPair (b1, b2) ->
+          unify (Equal (a1, b1) :: Equal (a2, b2) :: rest) subst
+      | TLoc a, TLoc b -> unify (Equal (a, b) :: rest) subst
       | _ -> raise (M.TypeError "cannot unify incompatible types"))
 
 let rec typ_to_mtype t =
