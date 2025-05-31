@@ -1,0 +1,4 @@
+(executable
+ (public_name rozettax)
+ (name main)
+ (libraries rozettax))

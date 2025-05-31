@@ -74,3 +74,16 @@ C[e] → C[e']
 - 타입 오류 -> completed by 1990s
 - 더 functional한 타입 오류(범위 체크라든가,,)
 - 더더 functional한 타입 오류(메모리,,)
+
+7. Object - Oriented - Programming (물건 중심 프로그래밍)
+- OOP의 핵심은 Inheritance, 상속
+-> Subtype polymorphism + Dynamic dispatch + Late binding
+- Type(값의 종류) 이 아닌 Class(물건의 종류), 물건은 내부적으로 상태를 갖는다. 
+- 상속에서 조심할 것 -> 상속된 자식의 동작은 부모와 다를 수 있다.. override는 패륜이며 만악의 근원이다(Professor. Hur)
+- 동작이 정적으로 결정되지 않는다,,
+- 변경에 취약하다는 것은 시공을 초월할 수 없다는 것,,
+
+8. Subtype polymorphism
+- 공변성과 반공변성,, 어긋남?
+- 함수 인자에 대해서는 반공변,, product에 대해서는 추가되면 더 구체적, additive에 대해서는 추가되면 더 일반적
+- 

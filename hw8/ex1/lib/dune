@@ -1,0 +1,8 @@
+(library
+ (name nutritious))
+
+(ocamllex lexer)
+
+(menhir
+ (modules parser)
+ (flags))

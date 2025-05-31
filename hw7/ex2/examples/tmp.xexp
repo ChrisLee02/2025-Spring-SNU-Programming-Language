@@ -1,0 +1,8 @@
+  (fn y => 
+    (fn z => 
+      ifp z then
+      y 1
+      else 
+      y 2
+    ) 1
+  ) (fn x => x)
