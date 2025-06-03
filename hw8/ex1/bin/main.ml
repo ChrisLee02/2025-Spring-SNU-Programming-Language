@@ -26,6 +26,6 @@ let run () =
     M_Printer.print_exp pgm;
     print_newline ());
   try M_Printer.print_typ (Poly_checker.check pgm)
-  with M.TypeError _ -> print_endline "Type Checking Failed"
+  with M.TypeError s -> print_endline ("Type Checking Failed" ^ s)
 
 let _ = run ()
