@@ -1,0 +1,82 @@
+[malloc;
+bind #tmp_val;
+push (x,
+  [bind #K;
+  bind f;
+  push x;
+  load;
+  push 1;
+  less;
+  jtr (
+    [push 0;
+    unbind;
+    pop;
+    push #K;
+    push unit;
+    push #tmp_val;
+    call],
+    [push x;
+    load;
+    push f;
+    push f;
+    push x;
+    load;
+    push 1;
+    sub;
+    malloc;
+    bind #tmp_bind;
+    push #tmp_val;
+    store;
+    bind #tmp_bind;
+    push (_,
+      [add;
+      unbind;
+      pop;
+      push #K;
+      push unit;
+      push #tmp_val;
+      call]
+      );
+    push #tmp_bind;
+    unbind;
+    pop;
+    push #tmp_val;
+    load;
+    push #tmp_bind;
+    unbind;
+    pop;
+    call])]
+  );
+bind f;
+malloc;
+bind #write_var;
+push f;
+push f;
+push 10;
+malloc;
+bind #tmp_bind;
+push #tmp_val;
+store;
+bind #tmp_bind;
+push (_,
+  [push #write_var;
+  store;
+  push #write_var;
+  load;
+  put;
+  push #write_var;
+  load;
+  unbind;
+  pop;
+  unbind;
+  pop]
+  );
+push #tmp_bind;
+unbind;
+pop;
+push #tmp_val;
+load;
+push #tmp_bind;
+unbind;
+pop;
+call]
